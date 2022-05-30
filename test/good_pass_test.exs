@@ -2,43 +2,43 @@ defmodule GoodPassTest do
   use ExUnit.Case
   doctest GoodPass
 
-  alphabet = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z"
-  @lowercase String.split(alphabet, ",")
-  @uppercase String.split(String.upcase(alphabet), ",")
-  @numbers String.split("0,1,2,3,4,5,6,7,8,9", ",")
-  @symbols String.split("!,@,#,$,%,&,?", ",")
+  @regex ~r/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
-  describe "generate/1" do
+  describe "generate/0" do
     test "lenght of password" do
-      assert String.length(GoodPass.generate()) == 12
-      assert String.length(GoodPass.generate(4)) == 4
-      assert String.length(GoodPass.generate(128)) == 128
+      {:ok, password} = GoodPass.generate()
+      assert String.length(password) == 12
     end
 
     test "contains lowercase, uppercase, numbers and symbols" do
-      password = GoodPass.generate() |> String.split("", trim: true)
+      {:ok, password} = GoodPass.generate()
 
-      has_lowercase =
-        Enum.reduce_while(password, false, fn character, acc ->
-          if character in @lowercase, do: {:halt, true}, else: {:cont, acc}
-        end)
+      assert String.match?(password, @regex)
+    end
+  end
 
-      has_uppercase =
-        Enum.reduce_while(password, false, fn character, acc ->
-          if character in @uppercase, do: {:halt, true}, else: {:cont, acc}
-        end)
+  describe "generate/1" do
+    test "password with 4 characters" do
+      assert {:error, _message} = GoodPass.generate(4)
+    end
 
-      has_numbers =
-        Enum.reduce_while(password, false, fn character, acc ->
-          if character in @numbers, do: {:halt, true}, else: {:cont, acc}
-        end)
+    test "password with 6 characters" do
+      assert {:error, _message} = GoodPass.generate(6)
+    end
 
-      has_symbols =
-        Enum.reduce_while(password, false, fn character, acc ->
-          if character in @symbols, do: {:halt, true}, else: {:cont, acc}
-        end)
+    test "password with 8 characters" do
+      assert {:ok, password} = GoodPass.generate(8)
+      assert String.length(password) == 8
+    end
 
-      assert has_lowercase and has_uppercase and has_numbers and has_symbols
+    test "password with 64 characters" do
+      assert {:ok, password} = GoodPass.generate(64)
+      assert String.length(password) == 64
+    end
+
+    test "password with 128 characters" do
+      assert {:ok, password} = GoodPass.generate(128)
+      assert String.length(password) == 128
     end
   end
 end
