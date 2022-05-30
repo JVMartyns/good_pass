@@ -1,46 +1,34 @@
 defmodule GoodPass do
-  alphabet = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z"
-  @lowercase String.split(alphabet, ",")
-  @uppercase String.split(String.upcase(alphabet), ",")
-  @numbers String.split("0,1,2,3,4,5,6,7,8,9", ",")
-  @symbols String.split("!,@,#,$,%,&,?", ",")
+  @alphabet Enum.to_list(?A..?z) -- '[\\]^_`'
+  @numbers Enum.to_list(?0..?9)
+  @symbols '!@$!%*?&'
+  @regex ~r/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
   def generate(len \\ 12) do
-    if good_password?(password = gen_password(len)) do
-      List.to_string(password)
-    else
-      generate(len)
+    cond do
+      len < 8 ->
+        {:error, "Password must be at least 8 characters long"}
+
+      len >= 8 ->
+        if good_password?(password = gen_password(len)) do
+          {:ok, password}
+        else
+          generate(len)
+        end
     end
   end
 
   defp gen_password(len) do
-    for _ <- Enum.to_list(1..len) do
-      Enum.random([@lowercase, @uppercase, @numbers, @symbols])
-      |> Enum.random()
-    end
+    password =
+      for _ <- Enum.to_list(1..len) do
+        Enum.random([@alphabet, @numbers, @symbols])
+        |> Enum.random()
+      end
+
+    List.to_string(password)
   end
 
   defp good_password?(password) do
-    has_lowercase =
-      Enum.reduce_while(password, false, fn character, acc ->
-        if character in @lowercase, do: {:halt, true}, else: {:cont, acc}
-      end)
-
-    has_uppercase =
-      Enum.reduce_while(password, false, fn character, acc ->
-        if character in @uppercase, do: {:halt, true}, else: {:cont, acc}
-      end)
-
-    has_numbers =
-      Enum.reduce_while(password, false, fn character, acc ->
-        if character in @numbers, do: {:halt, true}, else: {:cont, acc}
-      end)
-
-    has_symbols =
-      Enum.reduce_while(password, false, fn character, acc ->
-        if character in @symbols, do: {:halt, true}, else: {:cont, acc}
-      end)
-
-    has_lowercase and has_uppercase and has_numbers and has_symbols
+    String.match?(password, @regex)
   end
 end
