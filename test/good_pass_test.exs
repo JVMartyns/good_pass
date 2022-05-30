@@ -29,16 +29,19 @@ defmodule GoodPassTest do
     test "password with 8 characters" do
       assert {:ok, password} = GoodPass.generate(8)
       assert String.length(password) == 8
+      assert String.match?(password, @regex)
     end
 
     test "password with 64 characters" do
       assert {:ok, password} = GoodPass.generate(64)
       assert String.length(password) == 64
+      assert String.match?(password, @regex)
     end
 
     test "password with 128 characters" do
       assert {:ok, password} = GoodPass.generate(128)
       assert String.length(password) == 128
+      assert String.match?(password, @regex)
     end
   end
 end
