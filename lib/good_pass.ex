@@ -3,7 +3,7 @@ defmodule GoodPass do
   @lowercase String.split(alphabet, ",")
   @uppercase String.split(String.upcase(alphabet), ",")
   @numbers String.split("0,1,2,3,4,5,6,7,8,9", ",")
-  @special_characters String.split("!,@,#,$,%,&,?", ",")
+  @symbols String.split("!,@,#,$,%,&,?", ",")
 
   def generate(len \\ 12) do
     if good_password?(password = gen_password(len)) do
@@ -15,7 +15,7 @@ defmodule GoodPass do
 
   defp gen_password(len) do
     for _ <- Enum.to_list(1..len) do
-      Enum.random([@lowercase, @uppercase, @numbers, @special_characters])
+      Enum.random([@lowercase, @uppercase, @numbers, @symbols])
       |> Enum.random()
     end
   end
@@ -36,11 +36,11 @@ defmodule GoodPass do
         if character in @numbers, do: {:halt, true}, else: {:cont, acc}
       end)
 
-    has_special_characters =
+    has_symbols =
       Enum.reduce_while(password, false, fn character, acc ->
-        if character in @special_characters, do: {:halt, true}, else: {:cont, acc}
+        if character in @symbols, do: {:halt, true}, else: {:cont, acc}
       end)
 
-    has_lowercase and has_uppercase and has_numbers and has_special_characters
+    has_lowercase and has_uppercase and has_numbers and has_symbols
   end
 end
