@@ -34,23 +34,6 @@ iex(1)> GoodPass.RandomPass.generate(32) >>> {:ok, "B5030@jcbI@3@79g*?8?!9C!!I80
 
 - LegiblePass
 
-`GoodPass.LegiblePass.generate/0`\
-Generates a 12-character password using Portuguese language words as a base.
-```
-iex(1)> GoodPass.LegiblePass.generate >>> {:ok, "R&c&n$3@5t&$"}
-```
-
-`GoodPass.LegiblePass.generate/1`\
-If it receives an integer, it generates a password with the number of characters informed using Portuguese words as a base.
-
-If it receives a language, it generates a 12-character password using words from the given language as a base. Available languages: "pt", "en", "es", "de".
-
-```
-iex(1)> GoodPass.LegiblePass.generate(15) >>> {:ok, "R3f!N@nC!4R13!$"}
-
-iex(2)> GoodPass.LegiblePass.generate("en") >>> {:ok, "pH0n4$Th&n!@"}
-```
-
 `GoodPass.LegiblePass.generate/2`\
 Receive a language and the number of characters and generate a password with the number of characters informed using words of the informed language as a base.
 To standardize languages, passwords can only be between 10 and 20 characters long.
