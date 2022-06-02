@@ -3,16 +3,6 @@ defmodule GoodPass.LegiblePass do
   @languages ["pt", "en", "es", "de"]
   @lenght 10..20
 
-  def generate(), do: gen_good_password("pt", 12)
-  def generate(len) when len in @lenght, do: gen_good_password("pt", len)
-  def generate(language) when language in @languages, do: gen_good_password(language, 12)
-
-  def generate(len) when len not in @lenght,
-    do: {:error, "Password length: minimum 10, maximum: 20"}
-
-  def generate(language) when language not in @languages,
-    do: {:error, "language unavailable"}
-
   def generate(language, len) when language in @languages and len in @lenght do
     gen_good_password(language, len)
   end
@@ -36,7 +26,7 @@ defmodule GoodPass.LegiblePass do
   defp gen_password(language, len) do
     language
     |> select_word(len)
-    |> random_uppercade()
+    |> random_uppercase()
     |> GoodPass.encrypt()
   end
 
@@ -49,7 +39,7 @@ defmodule GoodPass.LegiblePass do
     |> Enum.random()
   end
 
-  defp random_uppercade(word) do
+  defp random_uppercase(word) do
     word
     |> String.split("", trim: true)
     |> Enum.map(&Enum.random([String.downcase(&1), String.upcase(&1)]))
